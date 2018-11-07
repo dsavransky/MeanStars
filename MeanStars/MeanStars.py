@@ -1,10 +1,11 @@
 import os.path
 import inspect
 import numpy as np
-import astropy.io
+import astropy.io.ascii
 import re
 import itertools
 import scipy.interpolate
+import pkg_resources
 
 
 class MeanStars:
@@ -19,9 +20,10 @@ class MeanStars:
 
         if datapath is None:
             filename = 'EEM_dwarf_UBVIJHK_colors_Teff.txt'
-            classpath = os.path.split(inspect.getfile(self.__class__))[0]
-            datapath = os.path.join(classpath, filename)
-        assert os.path.isfile(datapath),'Could not locate %s in TargetList directory.'%filename
+            datapath = pkg_resources.resource_filename('MeanStars', filename)
+            #classpath = os.path.split(inspect.getfile(self.__class__))[0]
+            #datapath = os.path.join(classpath, filename)
+        assert os.path.isfile(datapath),'Could not locate %s.'%datapath
 
         self.data = astropy.io.ascii.read(datapath,fill_values=[('...',np.nan),('....',np.nan),('.....',np.nan)])
 
