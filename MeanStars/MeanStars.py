@@ -190,7 +190,7 @@ class MeanStars:
     
 
     def TeffColor(self,start,end,Teff):
-        """Calculated the start-end color at a given effective temperature
+        """Calculate the start-end color at a given effective temperature
 
         Args:
             start (str):
@@ -236,7 +236,7 @@ class MeanStars:
 
 
     def SpTColor(self,start,end,MK,MKn):
-        """Calculated the start-end color for a given spectral type
+        """Calculate the start-end color for a given spectral type
 
         Args:
             start (str):
@@ -256,5 +256,104 @@ class MeanStars:
         self.interpSpT(start,end)
 
         return self.SpTinterps["-".join([start,end])][MK](MKn)
+
+
+    def getDataForOtherInterp(self,key):
+        """Grab all data for the given key 
+
+        Args:
+            key (str):
+                Property to interpolate (must be in MeanStars.noncolors)
+
+        Returns:
+            vals (float ndarray):
+                color values
+
+        """
+        
+        assert key in self.noncolors, "%s is not a known property"%end
+
+        vals = self.data[key].data.data.astype(float)
+
+        return vals
+    
+
+    def interpOtherTeff(self, key):
+        """Create an interpolant as a function of effective temprature for the 
+        given key and add it to the self.Teffinterps dict
+
+        Args:
+            key (str):
+                Property to interpolate (must be in MeanStars.noncolors)
+
+        """
+        
+        if (key in self.Teffinterps):
+            return
+
+        vals = self.getDataForOtherInterp(key)
+        Teff = self.data['Teff'].data.data.astype(float)
+
+        self.Teffinterps[key] = scipy.interpolate.interp1d(Teff[~np.isnan(vals)],\
+                vals[~np.isnan(vals)],bounds_error=False)
+
+    def TeffOther(self,key,Teff):
+        """Calculate the given property at a given effective temperature
+
+        Args:
+            key (str):
+                Property to interpolate (must be in MeanStars.noncolors)
+            Teff (float or array-like of floats):
+                Effective Temperature in K
+
+        Returns:
+            property at Teff (float, or array of floats)    
+        """
+
+        self.interpOtherTeff(key)
+
+        return self.Teffinterps[key](Teff)
+
+    def interpOtherSpT(self, key):
+        """Create an interpolant as a function of spectral type for the 
+        given key and add it to the self.SpTinterps dict
+
+        Args:
+            key (str):
+                Property to interpolate (must be in MeanStars.noncolors)
+
+        """
+        
+        if (key in self.SpTinterps):
+            return
+
+        vals = self.getDataForOtherInterp(key)
+
+        self.SpTinterps[key] = {}
+        for l in self.SpecTypes:
+            self.SpTinterps[key][l] = \
+                    scipy.interpolate.interp1d(self.MKn[self.MK==l].astype(float),\
+                    vals[self.MK==l],bounds_error=False)
+
+
+    def SpTOther(self,key,MK,MKn):
+        """Calculate the property color for a given spectral type
+
+        Args:
+            key (str):
+                Property to interpolate (must be in MeanStars.noncolors)
+            MK (str):
+                Spectral type (OBAFGKMLTY)
+            MKn (float, array-like of floats):
+                Spectral sub-type
+
+        Returns:
+            key value at MKn (float, or array of floats)    
+        """
+
+        assert MK in self.MK, "%s is not a known spectral type"%MK
+        self.interpOtherSpT(key)
+
+        return self.SpTinterps[key][MK](MKn)
 
 
