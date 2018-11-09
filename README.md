@@ -12,6 +12,10 @@ MeanStars requires the following python modules:
 
 To install, simply run:
 
+    pip install MeanStars
+    
+Alternatively, grab a copy of the repository and run:
+
     python setup.py install
     
 ## Usage
