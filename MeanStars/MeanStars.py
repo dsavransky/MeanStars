@@ -67,15 +67,21 @@ class MeanStars:
             colorgraph[r[0]].append(r[1])
             colorgraph[r[1]].append(r[0])
 
+        #attributes
         self.colors = colors
         self.bands = bands
         self.colorgraph = colorgraph
         self.colorstr = np.array(["-".join(c) for c in self.colors])
         self.noncolors = np.array(noncolors)
+        self.Teff = self.getFloatData('Teff')
+
+        #storage dicts
         self.Teffinterps = {}
         self.SpTinterps = {}
+        
+        #useful regexs
         self.specregex = re.compile('([OBAFGKMLTY])(\d*\.\d+|\d+).*')
-
+        self.nondec = re.compile('[^\d.-]+')
             
 
     def searchgraph(self, start, end, path=[]):
@@ -132,7 +138,27 @@ class MeanStars:
                     raise LookupError
                 res[j] = np.array([tmp[0],-1])
         return res
-    
+
+    def getFloatData(self,key):
+        """"Grab a numeric data column from the table and strip any non-numeric
+        characters as needed.
+
+        Args:
+            key (str):
+                Name of column to grab
+                
+        Returns:
+            vals (float ndarray):
+                Numerical values from columns
+
+        """
+        assert key in self.data.keys(), "%s not found in data table."%key
+
+        if np.issubdtype(self.data[key].dtype,np.number):
+            return self.data[key].data.data.astype(float)
+        else:
+            tmp = self.data[key].data.data
+            return np.array([self.nondec.sub('',v) if v != 'nan' else v for v in tmp]).astype(float)
 
     def interpTeff(self, start, end):
         """Create an interpolant as a function of effective temprature for the 
@@ -152,9 +178,8 @@ class MeanStars:
             return
 
         vals = self.getDataForColorInterp(start,end)
-        Teff = self.data['Teff'].data.data.astype(float)
 
-        self.Teffinterps[name] = scipy.interpolate.interp1d(Teff[~np.isnan(vals)],\
+        self.Teffinterps[name] = scipy.interpolate.interp1d(self.Teff[~np.isnan(vals)],\
                 vals[~np.isnan(vals)],bounds_error=False)
 
 
@@ -184,7 +209,7 @@ class MeanStars:
 
         vals = np.zeros(len(self.data))
         for r in res:
-            vals += r[1]*self.data[self.colorstr[r[0].astype(int)]].data.data.astype(float)
+            vals += r[1]*self.getFloatData(self.colorstr[r[0].astype(int)])
 
         return vals
     
@@ -277,7 +302,7 @@ class MeanStars:
         
         assert key in self.noncolors, "%s is not a known property"%end
 
-        vals = self.data[key].data.data.astype(float)
+        vals = self.getFloatData(key)
 
         return vals
     
@@ -296,9 +321,8 @@ class MeanStars:
             return
 
         vals = self.getDataForOtherInterp(key)
-        Teff = self.data['Teff'].data.data.astype(float)
 
-        self.Teffinterps[key] = scipy.interpolate.interp1d(Teff[~np.isnan(vals)],\
+        self.Teffinterps[key] = scipy.interpolate.interp1d(self.Teff[~np.isnan(vals)],\
                 vals[~np.isnan(vals)],bounds_error=False)
 
     def TeffOther(self,key,Teff):

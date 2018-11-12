@@ -55,16 +55,14 @@ class TestMeanStars(unittest.TestCase):
 
     def test_TeffColor(self):
 
-        Teffs = self.ms.data['Teff'].data.data.astype(float)
-        
         #grab color at random
         cind = np.random.randint(0,high=len(self.ms.colors))
 
-        vals = self.ms.data[self.ms.colorstr[cind]].data.data.astype(float)
+        vals = self.ms.getFloatData(self.ms.colorstr[cind])
         
         goodinds = np.isfinite(vals)
     
-        self.assertTrue(np.all(self.ms.TeffColor(self.ms.colors[cind][0],self.ms.colors[cind][1],Teffs[goodinds]) == vals[goodinds]),"Cannot reproduce colors from interpolant for %s"%self.ms.colorstr[cind])
+        self.assertTrue(np.all(self.ms.TeffColor(self.ms.colors[cind][0],self.ms.colors[cind][1],self.ms.Teff[goodinds]) == vals[goodinds]),"Cannot reproduce colors from interpolant for %s"%self.ms.colorstr[cind])
 
     def test_SpTColor(self):
 
@@ -73,7 +71,7 @@ class TestMeanStars(unittest.TestCase):
         #grab color at random
         cind = np.random.randint(0,high=len(self.ms.colors))
 
-        vals = self.ms.data[self.ms.colorstr[cind]].data.data.astype(float)
+        vals = self.ms.getFloatData(self.ms.colorstr[cind])
         
         goodinds = np.isfinite(vals)
     
@@ -85,16 +83,14 @@ class TestMeanStars(unittest.TestCase):
 
     def test_TeffOther(self):
 
-        Teffs = self.ms.data['Teff'].data.data.astype(float)
-        
         #grab property at random
         key = self.ms.noncolors[np.random.randint(0,high=len(self.ms.noncolors))]
 
-        vals = self.ms.data[key].data.data.astype(float)
-        
+        vals = self.ms.getFloatData(key)
+
         goodinds = np.isfinite(vals)
     
-        self.assertTrue(np.all(self.ms.TeffOther(key,Teffs[goodinds]) == vals[goodinds]),"Cannot reproduce values from interpolant for %s"%key)
+        self.assertTrue(np.all(self.ms.TeffOther(key,self.ms.Teff[goodinds]) == vals[goodinds]),"Cannot reproduce values from interpolant for %s"%key)
 
     def test_SpTOther(self):
 
@@ -103,7 +99,7 @@ class TestMeanStars(unittest.TestCase):
         #grab property at random
         key = self.ms.noncolors[np.random.randint(0,high=len(self.ms.noncolors))]
 
-        vals = self.ms.data[key].data.data.astype(float)
+        vals = self.ms.getFloatData(key)
         
         goodinds = np.isfinite(vals)
     
