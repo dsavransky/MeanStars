@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="MeanStars",
-    version="1.0.1",
+    version="1.0.2",
     author="Dmitry Savransky",
     author_email="ds264@cornell.edu",
     description="Automated property interpolation and color calculations for main sequence stars",
