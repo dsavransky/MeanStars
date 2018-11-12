@@ -26,8 +26,7 @@ class MeanStars:
 
         #spectral type regexp
         specregex = re.compile('([OBAFGKMLTY])(\d*\.\d+|\d+)V')
-        specregex2 = re.compile('([OBAFGKMLTY])(\d*\.\d+|\d+).*')
-
+        
         #get all the spectral types
         MK = []
         MKn = []
@@ -44,6 +43,7 @@ class MeanStars:
         colorregex = re.compile('(\w{1,2})-(\w{1,2})')
         colors = None
         noncolors = []
+        dontwant = ['SpT','#SpT','Teff']
         for k in keys:
             m = colorregex.match(k)
             if m:
@@ -52,7 +52,8 @@ class MeanStars:
                 else:
                     colors = np.vstack((colors,np.array(m.groups())))
             else:
-                noncolors.append(k)
+                if k not in dontwant:
+                    noncolors.append(k)
 
         #all the bands
         bands = np.unique(colors)
@@ -73,6 +74,8 @@ class MeanStars:
         self.noncolors = np.array(noncolors)
         self.Teffinterps = {}
         self.SpTinterps = {}
+        self.specregex = re.compile('([OBAFGKMLTY])(\d*\.\d+|\d+).*')
+
             
 
     def searchgraph(self, start, end, path=[]):
@@ -227,9 +230,13 @@ class MeanStars:
 
         self.SpTinterps[name] = {}
         for l in self.SpecTypes:
-            self.SpTinterps[name][l] = \
-                    scipy.interpolate.interp1d(self.MKn[self.MK==l].astype(float),\
-                    vals[self.MK==l],bounds_error=False)
+            tmp = vals[self.MK==l]
+            if np.all(np.isnan(tmp)):
+                self.SpTinterps[name][l] = lambda x: np.nan
+            else:
+                self.SpTinterps[name][l] = \
+                    scipy.interpolate.interp1d(self.MKn[self.MK==l][np.isfinite(tmp)].astype(float),\
+                    tmp[np.isfinite(tmp)],bounds_error=False)
 
 
     def SpTColor(self,start,end,MK,MKn):
@@ -328,9 +335,13 @@ class MeanStars:
 
         self.SpTinterps[key] = {}
         for l in self.SpecTypes:
-            self.SpTinterps[key][l] = \
-                    scipy.interpolate.interp1d(self.MKn[self.MK==l].astype(float),\
-                    vals[self.MK==l],bounds_error=False)
+            tmp = vals[self.MK==l]
+            if np.all(np.isnan(tmp)):
+                self.SpTinterps[key][l] = lambda x: np.nan
+            else:
+                self.SpTinterps[key][l] = \
+                    scipy.interpolate.interp1d(self.MKn[self.MK==l][np.isfinite(tmp)].astype(float),\
+                    tmp[np.isfinite(tmp)],bounds_error=False)
 
 
     def SpTOther(self,key,MK,MKn):
