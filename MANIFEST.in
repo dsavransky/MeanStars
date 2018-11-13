@@ -1,0 +1,3 @@
+include LICENSE README.md
+recursive-exclude tests *
+exclude requirements.txt .gitignore .travis.yml .coveragerc
