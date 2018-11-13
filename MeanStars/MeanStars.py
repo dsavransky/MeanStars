@@ -257,7 +257,11 @@ class MeanStars:
         for l in self.SpecTypes:
             tmp = vals[self.MK==l]
             if np.all(np.isnan(tmp)):
-                self.SpTinterps[name][l] = lambda x: np.nan
+                self.SpTinterps[name][l] = lambda x: np.array([np.nan]*len(np.array([x]).flatten()))
+            elif len(np.where(np.isfinite(tmp))[0]) == 1:
+                arg = float(self.MKn[self.MK==l][np.isfinite(tmp)][0])
+                tmp = tmp[np.isfinite(tmp)][0]
+                self.SpTinterps[name][l] = lambda x,tmp=tmp,arg=arg: np.array([tmp if y == arg else np.nan for y in np.array([x]).flatten()])
             else:
                 self.SpTinterps[name][l] = \
                     scipy.interpolate.interp1d(self.MKn[self.MK==l][np.isfinite(tmp)].astype(float),\
@@ -361,7 +365,11 @@ class MeanStars:
         for l in self.SpecTypes:
             tmp = vals[self.MK==l]
             if np.all(np.isnan(tmp)):
-                self.SpTinterps[key][l] = lambda x: np.nan
+                self.SpTinterps[key][l] = lambda x: np.array([np.nan]*len(np.array([x]).flatten()))
+            elif len(np.where(np.isfinite(tmp))[0]) == 1:
+                arg = float(self.MKn[self.MK==l][np.isfinite(tmp)][0])
+                tmp = tmp[np.isfinite(tmp)][0]
+                self.SpTinterps[key][l] = lambda x,tmp=tmp,arg=arg: np.array([tmp if y == arg else np.nan for y in np.array([x]).flatten()])
             else:
                 self.SpTinterps[key][l] = \
                     scipy.interpolate.interp1d(self.MKn[self.MK==l][np.isfinite(tmp)].astype(float),\
