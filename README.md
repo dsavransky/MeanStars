@@ -1,3 +1,7 @@
+[![Build Status](https://travis-ci.org/dsavransky/MeanStars.svg?branch=master)](https://travis-ci.org/dsavransky/MeanStars)
+[![Coverage Status](https://coveralls.io/repos/github/dsavransky/MeanStars/badge.svg?branch=master)](https://coveralls.io/github/dsavransky/MeanStars?branch=master)
+[![astropy](http://img.shields.io/badge/powered%20by-AstroPy-orange.svg?style=flat)](http://www.astropy.org/)
+
 # MeanStars
 
 This code provides functionality for automating calculations based on Eric Mamajek's "A Modern Mean Dwarf Stellar Color and Effective Temperature Sequence" (http://www.pas.rochester.edu/~emamajek/EEM_dwarf_UBVIJHK_colors_Teff.txt).
