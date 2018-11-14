@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="MeanStars",
-    version="1.1.0",
+    version="1.1.1",
     author="Dmitry Savransky",
     author_email="ds264@cornell.edu",
     description="Automated property interpolation and color calculations for main sequence stars",
@@ -21,6 +21,9 @@ setuptools.setup(
     ],
     classifiers=[
         "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
         "License :: OSI Approved :: BSD License",
         "Operating System :: OS Independent",
     ],
