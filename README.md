@@ -1,6 +1,7 @@
 [![Build Status](https://travis-ci.org/dsavransky/MeanStars.svg?branch=master)](https://travis-ci.org/dsavransky/MeanStars)
 [![Coverage Status](https://coveralls.io/repos/github/dsavransky/MeanStars/badge.svg?branch=master)](https://coveralls.io/github/dsavransky/MeanStars?branch=master)
 [![astropy](http://img.shields.io/badge/powered%20by-AstroPy-orange.svg?style=flat)](http://www.astropy.org/)
+[![PyPI version](https://badge.fury.io/py/MeanStars.svg)](https://badge.fury.io/py/MeanStars)
 
 # MeanStars
 
