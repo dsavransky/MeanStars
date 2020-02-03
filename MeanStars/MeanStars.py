@@ -154,10 +154,12 @@ class MeanStars:
         """
         assert key in self.data.keys(), "%s not found in data table."%key
 
-        if np.issubdtype(self.data[key].dtype,np.number):
-            return self.data[key].data.data.astype(float)
+        tmp = self.data[key].data
+        if isinstance(tmp,np.ma.core.MaskedArray):
+            tmp = tmp.data
+        if np.issubdtype(tmp.dtype,np.number):
+            return tmp.astype(float)
         else:
-            tmp = self.data[key].data.data
             return np.array([self.nondec.sub('',v) if v != 'nan' else v for v in tmp]).astype(float)
 
     def interpTeff(self, start, end):

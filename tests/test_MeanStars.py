@@ -65,7 +65,7 @@ class TestMeanStars(unittest.TestCase):
 
     def test_SpTColor(self):
 
-        SpT = self.ms.data['SpT'].data.data
+        SpT = self.ms.data['SpT'].data
         
         #do all the colors
         for cind in np.arange(len(self.ms.colors)):
@@ -89,7 +89,7 @@ class TestMeanStars(unittest.TestCase):
 
     def test_SpTOther(self):
 
-        SpT = self.ms.data['SpT'].data.data
+        SpT = self.ms.data['SpT'].data
         
         #do all the properties
         for key in self.ms.noncolors:
