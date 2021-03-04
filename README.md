@@ -1,8 +1,8 @@
 [![Build Status](https://travis-ci.org/dsavransky/MeanStars.svg?branch=master)](https://travis-ci.org/dsavransky/MeanStars)
-[![Coverage Status](https://coveralls.io/repos/github/dsavransky/MeanStars/badge.svg?branch=master)](https://coveralls.io/github/dsavransky/MeanStars?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/dsavransky/MeanStars/badge.svg?branch=master)](https://coveralls.io/github/dsavransky/MeanStars?branch=main)
 [![astropy](http://img.shields.io/badge/powered%20by-AstroPy-orange.svg?style=flat)](http://www.astropy.org/)
 [![PyPI version](https://badge.fury.io/py/MeanStars.svg)](https://badge.fury.io/py/MeanStars)
-[![Requirements Status](https://requires.io/github/dsavransky/MeanStars/requirements.svg?branch=master)](https://requires.io/github/dsavransky/MeanStars/requirements/?branch=master)
+[![Requirements Status](https://requires.io/github/dsavransky/MeanStars/requirements.svg?branch=main)](https://requires.io/github/dsavransky/MeanStars/requirements/?branch=master)
 
 # MeanStars
 
