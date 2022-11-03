@@ -3,4 +3,5 @@
 black
 flake8
 mypy
+types-setuptools
 coveralls
