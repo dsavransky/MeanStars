@@ -23,38 +23,53 @@ class MeanStars:
 
     Attributes:
         bands (numpy.ndarray):
-
+            Array of all available band strings.
         colorgraph (dict):
-
+            Graph of all available colors (band 1 - band 2) encoded as a dictionary.
+            Keys are each of the bands in attribute ``bands`` and values are lists of
+            all other bands for which a color is known.  For example, entry
+            ``'B': ['V', 'U']`` means that there exist B-V and B-U (or their negative)
+            colors.
         colors (numpy.ndarray):
-
+            2D string array of all colors. First column - second column.
         colorstr (numpy.ndarray):
-
+            Color strings matching the information in attribute ``colors``.
         data (astropy.table.table.Table):
             The original data, read from the selected file on disk.
         data_version (str):
             Version string, extracted from the file.  If a version string cannot be
             identified, this attribute is set to 'unknown'.
         MK (numpy.ndarray):
-
+            Array of spectral class letters matching all rows in data.
         MKn (numpy.ndarray):
-
+            Array of spectral subtype numbers matching all rows in data.
         noncolors (numpy.ndarray):
-
+            Data columns for quantities other than colors.
         nondec (re.Pattern):
-
+            Regular expression matching non numeric values.
+        romandict (dict):
+            Dictionary of roman numerals and their numerical values.
+        specdict (dict):
+            Dictionary mapping spectral classes to numerical values, with O = 0, and
+            Y = 9
         specregex (re.Pattern):
-            Regular expression for extracting spectral class letter and number
-
+            Regular expression matching a string with a spectral class, subclass and
+            luminosity class.
+        specregex_mixedtype (re.Pattern):
+            Regular expression matching a string with multiple spectral classes and a
+            luminosity class.
+        specregex_nolum (re.Pattern):
+            Regular expression matching string with a spectral class.
+        spectral_classes (str):
+            All valid spectral class letters.
         SpecTypes (numpy.ndarray):
-
+            Array of unique entires in attribute ``MK``.
         SpTinterps (dict):
-
+            Dictionary of spectral type interpolants by color.
         Teff (numpy.ndarray):
-
+            Effective temperature values from data.
         Teffinterps (dict):
-
-
+            Dictionary of effective temperature interpolants by color.
     """
 
     def __init__(self, datapath: Optional[str] = None) -> None:
@@ -116,7 +131,7 @@ class MeanStars:
         # or luminosity type AND subtype are missing. Note that the default specregex
         # will match cases where luminosity type is present but subtype is missing,
         # but will NOT match a string without a luminosity type.
-        # For a missing subtype, the second groupd (both here and in the default) will
+        # For a missing subtype, the second group (both here and in the default) will
         # be a blank string
         self.specregex_nolum = re.compile(
             rf"([{self.spectral_classes}])\s*\(*({numstr}[/-]?{numstr})\)*"
