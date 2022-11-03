@@ -13,8 +13,8 @@ if __name__ == "__main__":
 
     linenos = []
     # look for lines starting with #SpT:
-    for j, l in enumerate(txt):
-        if l.startswith("#SpT"):
+    for j, ll in enumerate(txt):
+        if ll.startswith("#SpT"):
             linenos.append(j)
 
     # there should be only 2 of these
@@ -30,5 +30,5 @@ if __name__ == "__main__":
 
     outfile = os.path.join(os.path.split(MeanStars.__file__)[0], fname)
     with open(outfile, "w") as f:
-        for l in outtxt:
-            f.write("{}\n".format(l))
+        for ll in outtxt:
+            f.write("{}\n".format(ll))

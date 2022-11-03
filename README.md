@@ -10,6 +10,8 @@ This code provides functionality for automating calculations based on Eric Mamaj
 
 The purpose of the code is to allow users to automatically interpolate the property columns of the table, and to calcualte colors based on any combination of the photometry columns.
 
+Also provides utilities for matching a wide variety of spectral type strings.
+
 ## Installation and Requirements
 MeanStars requires the following python modules:
 * numpy
@@ -22,8 +24,14 @@ To install, simply run:
     
 Alternatively, grab a copy of the repository and run:
 
-    python setup.py install
+    pip install .
+   
+To install in developer (editable) mode, grab a copy of the repository and run:
+
+    pip install -e .
     
+This last option is useful if you want to update the data file.
+
 ## Usage
 To use MeanStars, you must first create a MeanStars object:
 
@@ -76,3 +84,22 @@ and to find the mean radius of a K9V star, you would run:
 ```python
 ms.SpTOther('R_Rsun','K',9)
 ```
+
+### Matching Spectral Types
+
+MeanStars provides multiple regular expressions and a utility method for parsing spectral type strings.  These are all intended to work with Morgan-Keenan (MK, MKK, or Yerkes) style spectral type strings containing a Spectral Class (and Subclass) and (optionally) a Luminosity Class. The default matching behavior (provided by attribute `specregex`) is to Letter|number|roman numeral where the letter is the spectral class (one of OBAFKGMLTY), the number is the subclass (nominally between 0, inclusive, and 10, exclusive), and the roman numeral is the luminosity type (nominally I through VII). The number can be an integer or have a decimal, there can be parentheses around the number and/or roman numeral, and there can be spaces in between any or all of the values. The luminosity class (roman numeral) and subtype (number) can be two values separated by a slash or dash. Examples of valid strings that can be matched by this regular expressoin include: G0V, G(0)V, G(0)(V), G0.5V, G5/6V, G(5/6)(IV/V), G 0.5 (V), G 0.5V.
+
+The second available regular expressoin (in attribute `specregex_mixedtype`) supports the case where the type string contains multiple spectral types, spearated by a slash or dash. All of the same formatting is supported as in the previous case, and examples of valid matches include things like  G8/K0IV.  In these cases, only the first spectral type is extracted.  
+
+Finally, we can also parse cases without luminosity class, using attribute `specregex_nolum`.   Note that the default `specregex` will match cases where luminosity type is present but subclass is missing, but will *not* match a string without a luminosity type. For a missing subclass, the second group (both here and in the default) will be an empty string.
+
+All three of these regular expressions are wrapped by class method `matchSpecType`, which will try each in turn, and return as much information as possible for a given string. It will also look for leading white dwarf ('D') and subdwarf ('sd') patterns.  
+
+The method takes a single string input:
+```python
+ms.matchSpecType("G0V")
+```
+will return: `('G', 0.0, 'V')`.
+
+
+
