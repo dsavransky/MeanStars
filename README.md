@@ -85,6 +85,20 @@ and to find the mean radius of a K9V star, you would run:
 ms.SpTOther('R_Rsun','K',9)
 ```
 
+### Looking Up Nearest Data Entries
+
+For any data columns with monotonically varying data (such that a nearest-neighbor interpolant can be defined), the nearest data entry can be identified via the `tableLookup` method.  For example, to see which spectral type has closest log(solar luminosity) to 3, we can execute:
+```python
+ind = ms.tableLookup('logL', 3.0)
+print(ms.data[ind]['SpT','logL'])
+```
+which returns:
+```
+SpT logL
+--- ----
+B3V 2.99
+```
+
 ### Matching Spectral Types
 
 MeanStars provides multiple regular expressions and a utility method for parsing spectral type strings.  These are all intended to work with Morgan-Keenan (MK, MKK, or Yerkes) style spectral type strings containing a Spectral Class (and Subclass) and (optionally) a Luminosity Class. The default matching behavior (provided by attribute `specregex`) is to Letter|number|roman numeral where the letter is the spectral class (one of OBAFKGMLTY), the number is the subclass (nominally between 0, inclusive, and 10, exclusive), and the roman numeral is the luminosity type (nominally I through VII). The number can be an integer or have a decimal, there can be parentheses around the number and/or roman numeral, and there can be spaces in between any or all of the values. The luminosity class (roman numeral) and subtype (number) can be two values separated by a slash or dash. Examples of valid strings that can be matched by this regular expressoin include: G0V, G(0)V, G(0)(V), G0.5V, G5/6V, G(5/6)(IV/V), G 0.5 (V), G 0.5V.

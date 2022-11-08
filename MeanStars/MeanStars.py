@@ -148,7 +148,7 @@ class MeanStars:
             MK.append(m.groups()[0])  # type: ignore
             MKn.append(m.groups()[1])  # type: ignore
         self.MK = np.array(MK)
-        self.MKn = np.array(MKn)
+        self.MKn = np.array(MKn).astype(float)
         self.SpecTypes = np.unique(self.MK)
 
         # find all the colors and everything else
@@ -191,6 +191,7 @@ class MeanStars:
         # storage dicts
         self.Teffinterps: Dict[str, scipy.interpolate.interp1d] = {}
         self.SpTinterps: Dict[str, scipy.interpolate.interp1d] = {}
+        self.lookupinterps: Dict[str, scipy.interpolate.interp1d] = {}
 
     def searchgraph(
         self, start: str, end: str, path: List[str] = []
@@ -525,6 +526,47 @@ class MeanStars:
 
         return np.array(self.SpTinterps[key][MK](MKn))
 
+    def interpTableLookup(self, key: str) -> None:
+        """Create a lookup interpolant for row number for the
+        given key and add it to the self.lookupinterps dict
+
+        Args:
+            key (str):
+                Property to interpolate
+
+        """
+
+        if key in self.lookupinterps:
+            return
+
+        vals = self.getFloatData(key)
+        inds = np.arange(len(self.data))
+
+        self.lookupinterps[key] = scipy.interpolate.interp1d(
+            vals[~np.isnan(vals)],
+            inds[~np.isnan(vals)],
+            kind="nearest",
+            bounds_error=False,
+        )
+
+    def tableLookup(self, key: str, val: float) -> int:
+        """Return index of nearest row to given value for given key
+
+        Args:
+            key (str):
+                Property to look up.
+            val (float):
+                Value in key's column to match
+
+        Returns:
+            int:
+                Index of data row closest to given value in the given key
+        """
+
+        self.interpTableLookup(key)
+
+        return int(self.lookupinterps[key](val))
+
     def matchSpecType(self, spec: str) -> Optional[Tuple[str, float, str]]:
         """Match as much spectral type information as possible from type string
 
@@ -586,14 +628,30 @@ class MeanStars:
             warnings.warn(f"Missing subclass for {spec}. Assigning 5.")
             specSubClass = 5
         else:
+            if "/" in tmp.groups()[1]:
+                tmp2 = tmp.groups()[1].split("/")
+            elif "-" in tmp.groups()[1]:
+                tmp2 = tmp.groups()[1].split("-")
+            else:
+                tmp2 = [tmp.groups()[1]]
+
             # handle outlier case of repeated .. in value
-            tmp2 = [t.replace("..", ".") for t in tmp.groups()[1].split("/")]
+            tmp2 = [t.replace("..", ".") for t in tmp2]
+
+            # evaluate subclass value
             specSubClass = np.array(tmp2).astype(float).mean()
 
         # Finally, deal with luminosity class
         if not (subdwarf):
             if len(tmp.groups()) == 3:
-                tmp2 = tmp.groups()[2].split("/")
+                if "/" in tmp.groups()[2]:
+                    tmp2 = tmp.groups()[2].split("/")
+                elif "-" in tmp.groups()[2]:
+                    tmp2 = tmp.groups()[2].split("-")
+                else:
+                    tmp2 = [tmp.groups()[2]]
+
+                # preferentially select dwarfs
                 if "V" in tmp2:
                     lumClass = "V"
                 else:

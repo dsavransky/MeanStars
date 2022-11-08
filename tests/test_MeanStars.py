@@ -173,6 +173,20 @@ class TestMeanStars(unittest.TestCase):
                     "Cannot reproduce values from interpolant for %s" % key,
                 )
 
+    def test_tableLookup(self):
+
+        # check for logL and B-V as representative
+        keys = ["logL", "B-V"]
+        for key in keys:
+            vals = self.ms.getFloatData(key)
+            goodinds = np.where(np.isfinite(vals))[0]
+
+            for ind in goodinds:
+                self.assertTrue(
+                    ind == self.ms.tableLookup(key, vals[ind]),
+                    f"Table lookup failed for key {key} at index {ind}",
+                )
+
     def test_specregex(self):
         for s in self.valid_spectypes_single:
             self.assertTrue(
