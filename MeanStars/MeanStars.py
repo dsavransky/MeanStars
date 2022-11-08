@@ -100,6 +100,23 @@ class MeanStars:
         for j, s in enumerate(self.spectral_classes):
             self.specdict[s] = j
 
+        # Define standard pass-bands. lambda is effective wavelength in nm.  BW is the
+        # FWHM in nm. UBVRI are from Bessell (2005). YJHKLMN from Binney (1998).
+        self.bands = {
+            "U": {"lambda": 366.3, "BW": 65},
+            "B": {"lambda": 436.1, "BW": 89},
+            "V": {"lambda": 544.8, "BW": 84},
+            "R": {"lambda": 640.7, "BW": 158},
+            "I": {"lambda": 798.0, "BW": 154},
+            "Y": {"lambda": 1020, "BW": 120},
+            "J": {"lambda": 1220, "BW": 213},
+            "H": {"lambda": 1630, "BW": 307},
+            "K": {"lambda": 2190, "BW": 390},
+            "L": {"lambda": 3450, "BW": 472},
+            "M": {"lambda": 4750, "BW": 460},
+            "N": {"lambda": 10500, "BW": 2500},
+        }
+
         # Spectral Type regexs
         # Default spectral type string is Letter|number|roman numeral
         # First regex assumes all three are present, that the number can be an integer
