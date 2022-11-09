@@ -621,7 +621,7 @@ class MeanStars:
         if spec.startswith("sd"):
             subdwarf = True
             spec = spec.strip("sd")
-            lumClass = "VII"
+            lumClass = "VI"
         else:
             subdwarf = False
 
