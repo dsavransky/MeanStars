@@ -117,45 +117,63 @@ class MeanStars:
             "N": {"lambda": 10500, "BW": 2500},
         }
 
-        # Spectral Type regexs
-        # Default spectral type string is Letter|number|roman numeral
-        # First regex assumes all three are present, that the number can be an integer
-        # or have a decimal, that there can be parentheses around the number and/or
-        # roman numeral. The luminosity class (roman numeral) and subtype (number) can
-        # be two values separated by a slash or dash. Also allows for spaces in between.
-        # Examples of thing this matches:
-        # G0V, G(0)V, G(0)(V), G0.5V, G5/6V, G(5/6)(IV/V), G 0.5 (V), G 0.5V
-        numstr = r"\d*\.?\d*"  # generic regex for any valid number
-        self.specregex = re.compile(
-            (
-                rf"([{self.spectral_classes}])\s*\(*({numstr}[/-]?{numstr})\)*"
-                r"\s*\(*([IV]+[/-]{0,1}[IV]*)"
-            )
+        # Spectral Type regular expressions
+
+        # match any number of the form X.X or X or X. or .X where X is one or more
+        # digits. strategy: enumerate all posibilities
+        num = r"(?:\d+\.\d+|\d+\.?|\.\d+)"
+
+        # match any compound number of the form number or number/number of number-number
+        # anything of the form number/not number or number-not number should just return
+        # the first number
+        # strategy: match /- with lookahead to number. then match next number with
+        # lookbehind
+        cnum = rf"(?:{num}(?:[/-](?={num})){{0,1}}(?:(?<=[/-]){num}){{0,1}})"
+        self.cnumre = re.compile(cnum)
+
+        # match roman numerals 1-7 (I-VII)
+        # strategy: enumerate all possibilities
+        romans = "(?:VII|VI|V|IV|III|II|I)"
+
+        # match compound roman numeral (same as compound number above)
+        cromans = (
+            rf"(?:{romans}(?:[/-](?={romans})){{0,1}}(?:(?<=[/-]){romans}){{0,1}})"
         )
 
-        # Alternatively, you will sometimes have mixed types of the form:
-        # G8/K0IV.  This one supports all the same basic options as the previous one.
-        # In these cases, we are only extracting the leading class.
-        self.specregex_mixedtype = re.compile(
-            (
-                rf"([{self.spectral_classes}])\s*\(*({numstr}[/-]?{numstr})\)*[/-]"
-                rf"[{self.spectral_classes}]\s*\(*{numstr}[/-]?{numstr}\)*"
-                r"\s*\(*([IV]+\/{0,1}[IV]*)"
-            )
-        )
-
-        # As fallback options, we also consider the cases where the luminosity type
-        # or luminosity type AND subtype are missing. Note that the default specregex
-        # will match cases where luminosity type is present but subtype is missing,
-        # but will NOT match a string without a luminosity type.
-        # For a missing subtype, the second group (both here and in the default) will
-        # be a blank string
-        self.specregex_nolum = re.compile(
-            rf"([{self.spectral_classes}])\s*\(*({numstr}[/-]?{numstr})\)*"
-        )
-
+        # additional helper strings
+        op = r"\({0,1}"  # optional open paren
+        cp = r"\){0,1}"  # optional close paren
         # for identifying non-numeric values:
         self.nondec = re.compile(r"[^\d.-]+")
+        # for splitting on dashes/slashes:
+        self.dashslash = re.compile("-|/")
+
+        # Default spectral type string is Letter | number (0-9) |roman numeral (I-VII)
+        # These are spectral class | subclass | luminosity class.
+        # Subclass and luminosity class are optional and may be in parentheses. They
+        # can also each be a single value or two values spearted by a slash or dash.
+        # Subclass may be an integer or a float, and may be followed by a + or - sign.
+        # Spaces are allowed between the three substrings. There may be more stuff after
+        # the luminosity class, but it will be ignored.
+        # We need a capturing and non-capturing version (for future use)
+        specstr = (
+            rf"([{self.spectral_classes}])"  # spectral class
+            r"\s*"  # optional whitespace
+            rf"{op}({cnum}{{0,1}})[+-]{{0,1}}{cp}"  # subclass optional +/- and parens
+            r"\s*"  # optional whitespace
+            rf"{op}({cromans}{{0,1}}){cp}"  # luminosity class optional parens
+        )
+        specstrnc = (
+            rf"(?:[{self.spectral_classes}])\s*{op}(?:{cnum}{{0,1}})"
+            rf"[+-]{{0,1}}{cp}\s*{op}(?:{cromans}{{0,1}}){cp}"
+        )
+
+        # Finally, you may get a mixed types of the form: G8/K0IV. The strategy here is
+        # exactly the same as for the compound numbers and roman numerals:
+        cspecstr = (
+            rf"(?:{specstr}(?:/(?={specstrnc})){{0,1}}(?:(?<=/){specstr}){{0,1}})"
+        )
+        self.specregex = re.compile(cspecstr)
 
         # get all the spectral types
         MK = []
@@ -584,8 +602,28 @@ class MeanStars:
 
         return int(self.lookupinterps[key](val))
 
+    def split_dashslash(self, instr: Optional[str]) -> Optional[List[str]]:
+        """Helper method to split string on slashes/dashes
+
+        Args:
+            instr (str, optional):
+                Input string
+
+        Returns:
+            list, optional:
+                Split string or None (if input was None or blank).
+                If no slashes or dashes in input then return is single element list
+                containing the original string.
+
+        """
+        if (instr == "") or (instr is None):
+            return None
+
+        return self.dashslash.split(instr)
+
     def matchSpecType(self, spec: str) -> Optional[Tuple[str, float, str]]:
-        """Match as much spectral type information as possible from type string
+        """Match as much spectral type information as possible from type string and
+        return a single spectral class, subclass, and luminosity class
 
         Args:
             spec (str):
@@ -602,10 +640,12 @@ class MeanStars:
 
         .. note::
 
-            Preferentially matches dwarfs.  If multiple luminosity classes are present
+            Preferentially matches V dwarfs.  If multiple luminosity classes are present
             but one of them is V, then that's what will be returned.  Otherwise, it will
-            be the first class listed. For multiple spectral subclasses, and average
-            will be returned.
+            be the first class listed. For spectral subclasses of the form X-Y or X/Y,
+            the average of X and Y will be returned. For mixed spectral types of the
+            form G8/K0IV or G8V/K0IV the first spectral class (in this case G8) will be
+            returned.
 
         .. warning::
 
@@ -614,66 +654,73 @@ class MeanStars:
         """
 
         # If this is a white dwarf, can return right away
-        if spec.startswith("D"):
-            return "D", 0, "VII"
+        if spec.startswith("D") or spec.startswith("WD") or spec.startswith("wd"):
+            return "D", 0.0, "VII"
 
         # check for subdwarf prefix
         if spec.startswith("sd"):
             subdwarf = True
             spec = spec.strip("sd")
-            lumClass = "VI"
         else:
             subdwarf = False
 
-        # First try for a full set of values:
+        # Try to parse the string
         tmp = self.specregex.match(spec)
-        # If default did not work, look for mixed types
-        if not (tmp):
-            tmp = self.specregex_mixedtype.match(spec)
-        # If that didn't work, try just matching spectral type
-        if not (tmp):
-            tmp = self.specregex_nolum.match(spec)
-            if tmp:
-                warnings.warn(f"Missing luminosity class for {spec}. Assigning V.")
+        # If that did not work, there's nothing else to do
         if not (tmp):
             warnings.warn(f"Unable to match spectral type {spec}.")
             return None
 
         # At this point, should have at least the spectral class
+        # grab that and the first subclass and luminosity class
         specClass = tmp.groups()[0]
-        if tmp.groups()[1] in ["", ".."]:
+        specSubClass = self.split_dashslash(tmp.groups()[1])
+        lumClass = self.split_dashslash(tmp.groups()[2])
+
+        # Let's see if we found a second spectral type
+        if tmp.groups()[3] is not None:
+
+            specSubClass2 = self.split_dashslash(tmp.groups()[4])
+            lumClass2 = self.split_dashslash(tmp.groups()[5])
+
+            # if first subclass is missing and second isn't the use the second class
+            # for all values
+            if (specSubClass is None) and (specSubClass2 is not None):
+                specClass = tmp.groups()[3]
+                specSubClass = specSubClass2
+
+            # if both subclasses are not none, combine only if classes are the same
+            if (
+                (specSubClass is not None)
+                and (specSubClass2 is not None)
+                and (specClass == tmp.groups()[3])
+            ):
+                specSubClass += specSubClass2
+
+            # now the same thing for the luminosity classes, except we don't replace the
+            # spectral type if using the second lum class
+            if (lumClass is None) and (lumClass2 is not None):
+                lumClass = lumClass2
+            if (lumClass is not None) and (lumClass2 is not None):
+                lumClass += lumClass2
+
+        # Final cleanup
+        if specSubClass is None:
             warnings.warn(f"Missing subclass for {spec}. Assigning 5.")
-            specSubClass = 5
+            specSubClass_out = 5.0
         else:
-            if "/" in tmp.groups()[1]:
-                tmp2 = tmp.groups()[1].split("/")
-            elif "-" in tmp.groups()[1]:
-                tmp2 = tmp.groups()[1].split("-")
-            else:
-                tmp2 = [tmp.groups()[1]]
-
-            # handle outlier case of repeated .. in value
-            tmp2 = [t.replace("..", ".") for t in tmp2]
-
             # evaluate subclass value
-            specSubClass = np.array(tmp2).astype(float).mean()
+            specSubClass_out = np.array(specSubClass).astype(float).mean()
 
-        # Finally, deal with luminosity class
-        if not (subdwarf):
-            if len(tmp.groups()) == 3:
-                if "/" in tmp.groups()[2]:
-                    tmp2 = tmp.groups()[2].split("/")
-                elif "-" in tmp.groups()[2]:
-                    tmp2 = tmp.groups()[2].split("-")
-                else:
-                    tmp2 = [tmp.groups()[2]]
-
-                # preferentially select dwarfs
-                if "V" in tmp2:
-                    lumClass = "V"
-                else:
-                    lumClass = tmp2[0]
+        if subdwarf:
+            lumClass_out = "VI"
+        elif lumClass is None:
+            warnings.warn(f"Missing luminosity class for {spec}. Assigning V.")
+            lumClass_out = "V"
+        else:
+            if "V" in lumClass:
+                lumClass_out = "V"
             else:
-                lumClass = "V"
+                lumClass_out = lumClass[0]
 
-        return specClass, specSubClass, lumClass
+        return specClass, specSubClass_out, lumClass_out
