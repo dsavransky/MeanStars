@@ -73,7 +73,6 @@ class MeanStars:
     """
 
     def __init__(self, datapath: Optional[str] = None) -> None:
-
         if datapath is None:
             filename = "EEM_dwarf_UBVIJHK_colors_Teff.txt"
             datapath = pkg_resources.resource_filename("MeanStars", filename)
@@ -679,7 +678,6 @@ class MeanStars:
 
         # Let's see if we found a second spectral type
         if tmp.groups()[3] is not None:
-
             specSubClass2 = self.split_dashslash(tmp.groups()[4])
             lumClass2 = self.split_dashslash(tmp.groups()[5])
 

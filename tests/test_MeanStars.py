@@ -64,7 +64,6 @@ class TestMeanStars(unittest.TestCase):
             )
 
     def test_TeffColor(self):
-
         # do all the colors
         for cind in np.arange(len(self.ms.colors)):
             vals = self.ms.getFloatData(self.ms.colorstr[cind])
@@ -84,7 +83,6 @@ class TestMeanStars(unittest.TestCase):
             )
 
     def test_SpTColor(self):
-
         SpT = self.ms.data["SpT"].data
 
         # do all the colors
@@ -108,7 +106,6 @@ class TestMeanStars(unittest.TestCase):
                 )
 
     def test_TeffOther(self):
-
         # do all the properties
         for key in self.ms.noncolors:
             vals = self.ms.getFloatData(key)
@@ -122,7 +119,6 @@ class TestMeanStars(unittest.TestCase):
             )
 
     def test_SpTOther(self):
-
         SpT = self.ms.data["SpT"].data
 
         # do all the properties
@@ -139,7 +135,6 @@ class TestMeanStars(unittest.TestCase):
                 )
 
     def test_tableLookup(self):
-
         # check for logL and B-V as representative
         keys = ["logL", "B-V"]
         for key in keys:
@@ -178,7 +173,6 @@ class TestMeanStars(unittest.TestCase):
             ), f"cnumre failed for {nm}"
 
     def test_specregex(self):
-
         # check single types
         valid_spectypes_single = [
             "O0I",
