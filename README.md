@@ -2,7 +2,6 @@
 [![Coverage Status](https://coveralls.io/repos/github/dsavransky/MeanStars/badge.svg?branch=main)](https://coveralls.io/github/dsavransky/MeanStars?branch=main)
 [![astropy](http://img.shields.io/badge/powered%20by-AstroPy-orange.svg?style=flat)](http://www.astropy.org/)
 [![PyPI version](https://badge.fury.io/py/MeanStars.svg)](https://badge.fury.io/py/MeanStars)
-[![Requirements Status](https://requires.io/github/dsavransky/MeanStars/requirements.svg?branch=main)](https://requires.io/github/dsavransky/MeanStars/requirements/?branch=main)
 
 # MeanStars
 
