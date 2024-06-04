@@ -51,7 +51,8 @@ class MeanStars:
             Dictionary of roman numerals and their numerical values.
         specdict (dict):
             Dictionary mapping spectral classes to numerical values, with O = 0, and
-            Y = 9
+            Y = 9. The keys of this dictionary are the elements of attribute
+            ``spectral_classes``
         specregex (re.Pattern):
             Regular expression matching a string with a spectral class, subclass and
             luminosity class.
@@ -184,13 +185,16 @@ class MeanStars:
         self.MK = np.array(MK)
         self.MKn = np.array(MKn).astype(float)
         self.SpecTypes = np.unique(self.MK)
+        self.spectypenum = np.array(
+            [self.specdict[c] * 10 + sc for c, sc in zip(self.MK, self.MKn)]
+        )
 
         # find all the colors and everything else
         keys = self.data.keys()
         colorregex = re.compile(r"(\w{1,2})-(\w{1,2})")
         colors = np.array([])
         noncolors = []
-        dontwant = ["SpT", "#SpT", "Teff"]
+        dontwant = ["SpT", "#SpT"]
         for k in keys:
             m = colorregex.match(k)
             if m:
