@@ -261,7 +261,7 @@ class MeanStars:
                         bestpath = newpath
         return bestpath
 
-    def translatepath(self, path: List[str]) -> npt.NDArray[np.float_]:
+    def translatepath(self, path: List[str]) -> npt.NDArray[np.float64]:
         """Translate a path between bands to additions/subtractions of colors
 
         Args:
@@ -290,7 +290,7 @@ class MeanStars:
                 res[j] = np.array([tmp[0], -1])
         return res
 
-    def getFloatData(self, key: str) -> npt.NDArray[np.float_]:
+    def getFloatData(self, key: str) -> npt.NDArray[np.float64]:
         """Grab a numeric data column from the table and strip any non-numeric
         characters as needed.
 
@@ -338,7 +338,7 @@ class MeanStars:
             self.Teff[~np.isnan(vals)], vals[~np.isnan(vals)], bounds_error=False
         )
 
-    def getDataForColorInterp(self, start: str, end: str) -> npt.NDArray[np.float_]:
+    def getDataForColorInterp(self, start: str, end: str) -> npt.NDArray[np.float64]:
         """Grab all data for start-end color
 
         Args:
@@ -368,7 +368,7 @@ class MeanStars:
 
     def TeffColor(
         self, start: str, end: str, Teff: npt.ArrayLike
-    ) -> npt.NDArray[np.float_]:
+    ) -> npt.NDArray[np.float64]:
         """Calculate the start-end color at a given effective temperature
 
         Args:
@@ -429,7 +429,7 @@ class MeanStars:
 
     def SpTColor(
         self, start: str, end: str, MK: str, MKn: npt.ArrayLike
-    ) -> npt.NDArray[np.float_]:
+    ) -> npt.NDArray[np.float64]:
         """Calculate the start-end color for a given spectral type
 
         Args:
@@ -452,7 +452,7 @@ class MeanStars:
 
         return np.array(self.SpTinterps["-".join([start, end])][MK](MKn))
 
-    def getDataForOtherInterp(self, key: str) -> npt.NDArray[np.float_]:
+    def getDataForOtherInterp(self, key: str) -> npt.NDArray[np.float64]:
         """Grab all data for the given key
 
         Args:
@@ -490,7 +490,7 @@ class MeanStars:
             self.Teff[~np.isnan(vals)], vals[~np.isnan(vals)], bounds_error=False
         )
 
-    def TeffOther(self, key: str, Teff: npt.ArrayLike) -> npt.NDArray[np.float_]:
+    def TeffOther(self, key: str, Teff: npt.ArrayLike) -> npt.NDArray[np.float64]:
         """Calculate the given property at a given effective temperature
 
         Args:
@@ -543,7 +543,9 @@ class MeanStars:
                     bounds_error=False,
                 )
 
-    def SpTOther(self, key: str, MK: str, MKn: npt.ArrayLike) -> npt.NDArray[np.float_]:
+    def SpTOther(
+        self, key: str, MK: str, MKn: npt.ArrayLike
+    ) -> npt.NDArray[np.float64]:
         """Calculate the property color for a given spectral type
 
         Args:
