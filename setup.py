@@ -32,9 +32,9 @@ setuptools.setup(
     package_data={"MeanStars": ["EEM_dwarf_UBVIJHK_colors_Teff.txt"]},
     install_requires=["scipy", "numpy", "astropy"],
     classifiers=[
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
         "License :: OSI Approved :: BSD License",
         "Operating System :: OS Independent",
     ],

@@ -543,7 +543,9 @@ class MeanStars:
                     bounds_error=False,
                 )
 
-    def SpTOther(self, key: str, MK: str, MKn: npt.ArrayLike) -> npt.NDArray[np.float64]:
+    def SpTOther(
+        self, key: str, MK: str, MKn: npt.ArrayLike
+    ) -> npt.NDArray[np.float64]:
         """Calculate the property color for a given spectral type
 
         Args:
