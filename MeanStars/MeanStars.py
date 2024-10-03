@@ -3,7 +3,7 @@ import numpy as np
 import astropy.io.ascii  # type: ignore
 import re
 import scipy.interpolate  # type: ignore
-import pkg_resources
+import importlib
 from typing import Tuple, Optional, List, Dict
 import warnings
 import numpy.typing as npt
@@ -76,7 +76,8 @@ class MeanStars:
     def __init__(self, datapath: Optional[str] = None) -> None:
         if datapath is None:
             filename = "EEM_dwarf_UBVIJHK_colors_Teff.txt"
-            datapath = pkg_resources.resource_filename("MeanStars", filename)
+            with importlib.resources.path("MeanStars", filename) as path:
+                datapath = path
         assert os.path.isfile(datapath), "Could not locate %s." % datapath
 
         self.data = astropy.io.ascii.read(
