@@ -4,9 +4,10 @@ import astropy.io.ascii  # type: ignore
 import re
 import scipy.interpolate  # type: ignore
 from importlib import resources
-from typing import Tuple, Optional, List, Dict
+from typing import Tuple, Optional, List, Dict, Union
 import warnings
 import numpy.typing as npt
+from importlib.resources.abc import Traversable
 
 
 class MeanStars:
@@ -73,11 +74,13 @@ class MeanStars:
             Dictionary of effective temperature interpolants by color.
     """
 
-    def __init__(self, datapath: Optional[str] = None) -> None:
+    def __init__(self, datapath: Optional[Union[str, Traversable]] = None) -> None:
         if datapath is None:
             filename = "EEM_dwarf_UBVIJHK_colors_Teff.txt"
             datapath = resources.files("MeanStars").joinpath(filename)
-        assert os.path.isfile(datapath), "Could not locate %s." % datapath
+            assert os.path.isfile(datapath), (  # type: ignore
+                "Could not locate %s." % datapath
+            )
 
         self.data = astropy.io.ascii.read(
             datapath, fill_values=[("...", np.nan), ("....", np.nan), (".....", np.nan)]
