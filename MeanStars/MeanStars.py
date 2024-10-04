@@ -7,7 +7,7 @@ from importlib import resources
 from typing import Tuple, Optional, List, Dict, Union
 import warnings
 import numpy.typing as npt
-from importlib.resources.abc import Traversable
+from importlib.abc import Traversable
 
 
 class MeanStars:
