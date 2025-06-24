@@ -1,7 +1,7 @@
 -r requirements.txt
 
 black
-flake8
+ruff
 mypy
 types-setuptools
 coveralls

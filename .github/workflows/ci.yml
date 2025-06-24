@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.10', '3.11', '3.12']
+        python-version: ['3.10', '3.11', '3.12', '3.13']
 
     steps:
       - uses: actions/checkout@v4
@@ -29,7 +29,7 @@ jobs:
           pip install -r test_requirements.txt
           pip install . -v
       - name: Lint with flake8
-        run: flake8
+        run: ruff check
       - name: Check formatting
         run: black --check MeanStars tests
       - name: Check typing

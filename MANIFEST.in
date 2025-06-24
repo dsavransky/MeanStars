@@ -1,3 +1,4 @@
 include LICENSE README.md
+include MeanStars/EEM_dwarf_UBVIJHK_colors_Teff.txt
 recursive-exclude tests *
 exclude requirements.txt .gitignore .travis.yml .coveragerc

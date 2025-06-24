@@ -244,6 +244,8 @@ class MeanStars:
                 Starting band
             end (str):
                 Ending band
+            path (list(str), optional):
+                Current best path between start and end nodes
 
         Returns:
             list(str) or None:
