@@ -68,6 +68,10 @@ class MeanStars:
             Array of unique entires in attribute ``MK``.
         SpTinterps (dict):
             Dictionary of spectral type interpolants by color.
+        standardBands (dict(dict)):
+            Dictionary of standard passbands. Each band is a dictionary with keys:
+            ``lambda`` (effective wavelength in nm) and ``BW`` (the FWHM in nm).
+            UBVRI are from Bessell (2005). YJHKLMN from Binney (1998).
         Teff (numpy.ndarray):
             Effective temperature values from data.
         Teffinterps (dict):
@@ -105,7 +109,7 @@ class MeanStars:
 
         # Define standard pass-bands. lambda is effective wavelength in nm.  BW is the
         # FWHM in nm. UBVRI are from Bessell (2005). YJHKLMN from Binney (1998).
-        self.bands = {
+        self.standardBands = {
             "U": {"lambda": 366.3, "BW": 65},
             "B": {"lambda": 436.1, "BW": 89},
             "V": {"lambda": 544.8, "BW": 84},

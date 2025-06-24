@@ -28,7 +28,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r test_requirements.txt
           pip install . -v
-      - name: Lint with flake8
+      - name: Lint with ruff
         run: ruff check
       - name: Check formatting
         run: black --check MeanStars tests
