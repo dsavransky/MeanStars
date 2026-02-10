@@ -9,9 +9,9 @@ import warnings
 import numpy.typing as npt
 
 try:
-    from importlib.resources.abc import Traversable
+    from importlib.resources.abc import Traversable  # type: ignore[import-not-found,attr-defined,unused-ignore]
 except ModuleNotFoundError:
-    from importlib.abc import Traversable
+    from importlib.abc import Traversable  # type: ignore[import-not-found,attr-defined,unused-ignore,no-redef]
 
 
 class MeanStars:
