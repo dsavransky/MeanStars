@@ -7,7 +7,11 @@ from importlib import resources
 from typing import Tuple, Optional, List, Dict, Union
 import warnings
 import numpy.typing as npt
-from importlib.abc import Traversable
+
+try:
+    from importlib.resources.abc import Traversable  # type: ignore[import-not-found,attr-defined,unused-ignore]
+except ModuleNotFoundError:
+    from importlib.abc import Traversable  # type: ignore[import-not-found,attr-defined,unused-ignore,no-redef]
 
 
 class MeanStars:
